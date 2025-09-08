@@ -1,1 +1,2 @@
-% thisi  a read me for INDOT Fire Porject at Bowen
+% This is the readme file for INDOT Fire Project at Bowen Civil Engineering Lab
+sd
