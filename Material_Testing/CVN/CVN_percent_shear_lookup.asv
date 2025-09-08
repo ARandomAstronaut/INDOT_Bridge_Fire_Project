@@ -1,0 +1,42 @@
+%% Bowen INDOT Bridge Research - CVN (mm-Table) Lookup code
+%Author: Phong T Pham
+clc; close all; clear; 
+% the purpose of this script is to ensure consistency for interpolation of
+% shear percentage for tested CVN samples. 
+
+
+% Create the coarse grid that matches Z
+A = 1.0:0.5:10.0; B = 1.0:0.5:8.5;  
+[Aq, Bq] = meshgrid(A, B);  % Aq = cols, Bq = rows, both 16x19
+
+% Define table A4.1 in ASTM E23-24 (16x19 matrix — B rows × A columns)
+table = [99 98 98 97 96 96 96 95 94 94 93 92 92 91 91 90 89 88 88;
+    98 97 96 95 94 93 93 92 92 91 90 89 88 87 86 85 84 82 81;
+    98 96 95 94 92 91 91 90 89 88 86 85 84 82 81 80 79 77 75;
+    97 95 94 92 91 89 89 88 86 84 83 81 80 78 77 75 73 70 69;
+    96 94 92 91 89 87 87 85 83 81 79 77 76 74 72 70 68 64 62;
+    96 93 91 89 87 85 85 82 80 78 76 74 72 69 67 65 63 58 56;
+    95 92 90 88 85 82 82 80 77 75 72 70 67 65 62 60 57 52 50;
+    94 92 89 86 83 80 80 77 75 72 69 66 63 61 58 55 52 46 44;
+    94 91 88 85 81 78 78 75 72 69 66 62 59 56 53 50 47 41 37;
+    94 91 86 83 79 76 76 72 69 66 62 59 55 52 48 45 42 35 31;
+    93 90 86 83 77 74 74 70 66 62 59 55 51 47 44 40 36 29 25;
+    92 89 85 81 74 72 72 67 63 59 55 51 47 43 39 34 30 23 19;
+    92 88 84 80 69 67 67 62 58 53 50 45 41 37 34 30 25 17 12;
+    91 87 82 78 65 63 63 58 53 48 45 40 36 31 30 25 20 11  6;
+    91 86 81 77 60 57 57 52 47 42 38 33 29 25 26 20 15  5  0;
+    90 85 80 75 55 52 52 47 41 37 31 25 25 19 19 15 10  5  0 ];
+
+% Import Measurements of A and B dimensions (measured in mm)
+toughness_plots = readtable('CVN_Test_and_Result.xlsx', 'Sheet', "Toughness_plots");
+A_measurement = toughness_plots.A_measure;
+B_measurement = toughness_plots.B_measure;
+
+percent_shear = zeros(1, length(A_measurement));
+
+for i = 1 : length(B_measurement)
+    percent_shear(i) = interp2(Aq, Bq, table, A_measurement(i), B_measurement(i), 'linear')
+end
+writematrix(percent_shear', 'CVN_Test_and_Result.xlsx', 'Sheet', "Toughness_plots", 'Range', [char(64+8) '7']); %start writting at row 7
+
+
